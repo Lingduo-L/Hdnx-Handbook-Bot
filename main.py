@@ -4,8 +4,13 @@ import re
 
 from langchain.chains import RetrievalQA, LLMChain
 from langchain.prompts import PromptTemplate, ChatPromptTemplate
-from langchain.chat_models import ChatOpenAI
-from langchain.embeddings import OpenAIEmbeddings
+
+# from langchain.chat_models import ChatOpenAI
+from langchain_openai import ChatOpenAI
+
+# from langchain.embeddings import OpenAIEmbeddings
+from langchain_openai import OpenAIEmbeddings
+
 from langchain.vectorstores import FAISS
 from langchain.retrievers import BM25Retriever, EnsembleRetriever
 from langchain.schema import Document
