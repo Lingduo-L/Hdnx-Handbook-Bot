@@ -1,0 +1,120 @@
+import os
+from pathlib import Path
+import re
+
+from langchain.chains import RetrievalQA, LLMChain
+from langchain.prompts import PromptTemplate, ChatPromptTemplate
+from langchain.chat_models import ChatOpenAI
+from langchain.embeddings import OpenAIEmbeddings
+from langchain.vectorstores import FAISS
+from langchain.retrievers import BM25Retriever, EnsembleRetriever
+from langchain.schema import Document
+
+import spacy
+import streamlit as st
+
+# ===== 设置 OpenAI API Key =====
+os.environ["OPENAI_API_KEY"] = st.secrets["OPENAI_API_KEY"]
+
+# ===== 加载 spaCy 分词器（用于 BM25）=====
+# nlp = spacy.load("en_core_web_sm")
+# def spacy_tokenizer(text):
+#     return [token.text for token in nlp(text)]
+
+nlp = spacy.load("en_core_web_sm")
+def spacy_tokenizer(text: str) -> list[str]:
+    return [token.text for token in nlp(text) if not token.is_space]
+
+# ===== 加载文档 =====
+chunk_path = Path("data/handbook_chunks.txt")
+with open(chunk_path, "r", encoding="utf-8") as f:
+    content = f.read()
+
+raw_chunks = content.split("\n\n")
+docs = [Document(page_content=chunk) for chunk in raw_chunks if chunk.strip()]
+
+bm25_retriever = BM25Retriever.from_documents(docs, tokenizer=spacy_tokenizer)
+
+# ===== 初始化检索器 =====
+bm25_retriever = BM25Retriever.from_documents(docs, tokenizer=spacy_tokenizer)
+embedding_model = OpenAIEmbeddings(model="text-embedding-3-small")
+db = FAISS.load_local("faiss_index", embedding_model, allow_dangerous_deserialization=True)
+faiss_retriever = db.as_retriever(search_kwargs={"k": 10})
+
+retriever = EnsembleRetriever(
+    retrievers=[bm25_retriever, faiss_retriever],
+    weights=[0.5, 0.5]
+)
+
+# ===== 问题改写模块 =====
+rewrite_llm = ChatOpenAI(temperature=0, model_name="gpt-4o", max_tokens=4000)
+query_rewrite_prompt = ChatPromptTemplate.from_messages([
+    ("system", "You are an assistant that reformulates user queries to improve document retrieval in a knowledge-based system. \
+Your rewritten query should be specific, semantically rich, and suitable for searching in a vector database."),
+    ("human", "Original query: {original_query}\n\nRewritten query:")
+])
+query_rewriter = query_rewrite_prompt | rewrite_llm
+
+def rewrite_query(original_query: str) -> str:
+    try:
+        response = query_rewriter.invoke({"original_query": original_query})
+        return response.content.strip() if response.content.strip() else original_query
+    except:
+        return original_query
+
+# ===== 定义 RAG Prompt =====
+custom_prompt = PromptTemplate.from_template("""
+You are an assistant that answers questions strictly based on the internal documentation.
+
+Your first task is to extract and display **all relevant Process IDs** found in the context.
+You must list the Process IDs explicitly before giving any answer.
+
+Example:
+Relevant Process IDs: 291, 295
+
+Then provide a clear, concise, **logical** answer and **Briefly** state the process content that corresponds to your answers.
+
+---
+
+Question: {question}
+Context:
+{context}
+
+Answer:
+""")
+
+# ===== 构建 RAG 问答链 =====
+llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0)
+qa_chain = RetrievalQA.from_chain_type(
+    llm=llm,
+    retriever=retriever,
+    return_source_documents=True,
+    chain_type="stuff",
+    chain_type_kwargs={"prompt": custom_prompt},
+    verbose=True,
+)
+
+# ===== 主程序入口 =====
+if __name__ == "__main__":
+    while True:
+        user_question = input("\n🧠 Please Input your question:(Input 'exit' to exit): \n> ")
+        if user_question.lower() in ["exit", "quit"]:
+            break
+
+        rewritten = rewrite_query(user_question)
+        print(f"\n🔁 question after rewrting: {rewritten}")
+
+        result = qa_chain.invoke({"query": rewritten})
+
+        print("\n🤖 AI Bot Answer: ")
+        print(result["result"])
+
+        print("\n📚 Sources (Relevant IDs from #### headers): ")
+        for i, doc in enumerate(result["source_documents"]):
+            headers = re.findall(r"^####.*", doc.page_content, flags=re.MULTILINE)
+            ids = []
+            for header in headers:
+                ids += re.findall(r"\b\d+\b", header)
+            if ids:
+                unique_ids = sorted(set(ids), key=int)
+                print(f"From Source #{i+1}: " + ", ".join(unique_ids))
