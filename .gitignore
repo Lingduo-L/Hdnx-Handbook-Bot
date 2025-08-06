@@ -14,3 +14,7 @@ wheels/
 # Directories
 /data
 /test_code
+
+# Keys
+/.streamlit/
+
