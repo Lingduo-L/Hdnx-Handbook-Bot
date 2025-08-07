@@ -12,7 +12,6 @@ wheels/
 .env
 
 # Directories
-/data
 /test_code
 
 # Keys
