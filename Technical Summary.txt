@@ -1,0 +1,44 @@
+
+
+Technical Summary: Hdnx Handbook Bot
+
+Overview:
+The Hdnx Handbook Bot is a lightweight internal Q&A assistant designed to allow team members to query the company handbook using natural language. It leverages a retrieval-augmented generation (RAG) pipeline, combining traditional and modern retrieval techniques to improve relevance and accuracy.
+
+Workflow:
+1. **Preprocessing**
+   - The company handbook was pre-chunked into semantically meaningful sections using a custom script.
+   - These chunks were stored in `handbook_chunks.txt` and used as the source documents.
+
+2. **Indexing**
+   - FAISS index: Dense vector index built using OpenAI’s `text-embedding-3-small` model.
+   - BM25 index: Sparse retriever built using spaCy tokenization (`en_core_web_sm`) and `BM25Retriever` from `langchain_community.retrievers`.
+   - An `EnsembleRetriever` was implemented to combine FAISS and BM25 results for better recall.
+
+3. **Query Processing**
+   - A user’s raw query is rewritten using a `ChatOpenAI` (GPT-4o) LLM prompt to improve specificity and search performance.
+   - This rewritten query is sent to the hybrid retriever to fetch relevant chunks.
+
+4. **Answer Generation**
+   - Retrieved documents are passed into a LangChain `RetrievalQA` chain powered by GPT-4o to generate the final natural language response.
+   - Process IDs and sources are optionally included in the answer for traceability.
+
+5. **Frontend & Deployment**
+   - A user interface was built using **Streamlit** (`app.py`) with a simple form for question input and answer display.
+   - The application was deployed to **Streamlit Cloud** and embedded into the company’s Notion homepage.
+   - Secrets (OpenAI API key) are securely managed using `.streamlit/secrets.toml`.
+
+Technologies Used:
+- LangChain (chains, retrievers, OpenAI LLMs)
+- OpenAI GPT-4o and text-embedding models
+- FAISS (Facebook AI Similarity Search)
+- BM25 (via LangChain + spaCy)
+- Streamlit (frontend + deployment)
+- GitHub (version control)
+- Notion (internal integration)
+- uv + pyproject.toml for environment management
+
+Future Improvements:
+- Sync with the latest version of the company handbook.
+- Improve result formatting and user experience.
+- Add authentication or access restriction as needed.
