@@ -11,8 +11,12 @@ from langchain_openai import ChatOpenAI
 # from langchain.embeddings import OpenAIEmbeddings
 from langchain_openai import OpenAIEmbeddings
 
-from langchain.vectorstores import FAISS
-from langchain.retrievers import BM25Retriever, EnsembleRetriever
+# from langchain.vectorstores import FAISS
+from langchain_community.vectorstores import FAISS
+
+from langchain.retrievers import EnsembleRetriever
+from langchain_community.retrievers import BM25Retriever
+
 from langchain.schema import Document
 
 import spacy
