@@ -18,3 +18,6 @@ wheels/
 # Keys
 /.streamlit/
 
+#environment file
+/pyproject.toml
+/uv.lock
