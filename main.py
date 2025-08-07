@@ -17,6 +17,18 @@ from langchain.schema import Document
 
 import spacy
 import streamlit as st
+import subprocess
+import importlib.util
+
+# ===== 检查 spaCy 模型是否存在，不存在就自动下载 ===== 
+model_name = "en_core_web_sm"
+if not importlib.util.find_spec(model_name):
+    subprocess.run(["python", "-m", "spacy", "download", model_name])
+
+nlp = spacy.load(model_name)
+
+def spacy_tokenizer(text: str) -> list[str]:
+    return [token.text for token in nlp(text) if not token.is_space]
 
 # ===== 设置 OpenAI API Key =====
 os.environ["OPENAI_API_KEY"] = st.secrets["OPENAI_API_KEY"]
