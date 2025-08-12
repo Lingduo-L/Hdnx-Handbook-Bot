@@ -25,7 +25,9 @@ if st.button("🔍 Submit") and user_input:
         match = re.search(r"# Process\s+(\d+)", doc.page_content)
         if match:
             process_id = match.group(1)
-            st.markdown(f"--- Process {process_id} ---")
+            st.markdown(f"---\n#### 📄 Process {process_id}\n")
         else:
-            st.markdown(f"--- Unlabeled Process ---")
-        st.write(doc.page_content)
+            st.markdown("---\n#### 📄 Unlabeled Process\n")
+        
+        # Ensure spacing is clear and markdown is rendered cleanly
+        st.markdown(f"```markdown\n{doc.page_content.strip()}\n```")
