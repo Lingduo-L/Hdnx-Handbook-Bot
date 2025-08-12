@@ -30,4 +30,4 @@ if st.button("🔍 Submit") and user_input:
             st.markdown("---\n#### 📄 Unlabeled Process\n")
         
         # Ensure spacing is clear and markdown is rendered cleanly
-        st.markdown(f"```markdown\n{doc.page_content.strip()}\n```")
+        st.markdown(doc.page_content.strip())
