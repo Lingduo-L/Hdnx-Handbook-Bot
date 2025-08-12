@@ -130,12 +130,11 @@ if __name__ == "__main__":
         print("\n🤖 AI Bot Answer: ")
         print(result["result"])
 
-        print("\n📚 Sources (Relevant IDs from #### headers): ")
-        for i, doc in enumerate(result["source_documents"]):
-            headers = re.findall(r"^####.*", doc.page_content, flags=re.MULTILINE)
-            ids = []
-            for header in headers:
-                ids += re.findall(r"\b\d+\b", header)
-            if ids:
-                unique_ids = sorted(set(ids), key=int)
-                print(f"From Source #{i+1}: " + ", ".join(unique_ids))
+        print("\n📚 Relevant Process Chunks: ")
+        for doc in result["source_documents"]:
+            match = re.search(r'Process\s+(\d+)', doc.page_content)
+            if match:
+                process_id = match.group(1)
+                print(f"\n--- Process {process_id} ---\n{doc.page_content.strip()}\n")
+            else:
+                print(f"\n--- Unlabeled Process ---\n{doc.page_content.strip()}\n")
