@@ -20,12 +20,12 @@ if st.button("🔍 Submit") and user_input:
     st.markdown("### 🤖 Answer:")
     st.write(result["result"])
 
-    st.markdown("### 📚 Relevant Process IDs:")
+    st.markdown("### 📚 Relevant Processes:")
     for i, doc in enumerate(result["source_documents"]):
-        headers = re.findall(r"^####.*", doc.page_content, flags=re.MULTILINE)
-        ids = []
-        for header in headers:
-            ids += re.findall(r"\b\d+\b", header)
-        if ids:
-            unique_ids = sorted(set(ids), key=int)
-            st.write(f"From Source #{i+1}: " + ", ".join(unique_ids))
+        match = re.search(r"# Process\s+(\d+)", doc.page_content)
+        if match:
+            process_id = match.group(1)
+            st.markdown(f"--- Process {process_id} ---")
+        else:
+            st.markdown(f"--- Unlabeled Process ---")
+        st.write(doc.page_content)
