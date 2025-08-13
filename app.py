@@ -25,9 +25,8 @@ if st.button("🔍 Submit") and user_input:
         match = re.search(r"# Process\s+(\d+)", doc.page_content)
         if match:
             process_id = match.group(1)
-            st.markdown(f"---\n#### 📄 Process {process_id}\n")
+            # Extract the first line as the title
+            title_line = doc.page_content.strip().splitlines()[0]
+            st.markdown(f"---\n#### 📄 {title_line}")
         else:
-            st.markdown("---\n#### 📄 Unlabeled Process\n")
-        
-        # Ensure spacing is clear and markdown is rendered cleanly
-        st.markdown(doc.page_content.strip())
+            st.markdown("---\n#### 📄 Unlabeled Process")

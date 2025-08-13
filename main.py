@@ -93,9 +93,13 @@ You must list the Process IDs explicitly before giving any answer.
 Example:
 Relevant Process IDs: 291, 295
 
-Then provide a clear, concise, **logical** answer and **Briefly** state the process content that corresponds to your answers.
+Then provide a clear, concise, **logical** answer in the form of a workflow:
+- Start by identifying the **first step** a person should take.
+- Clearly describe each subsequent step, referencing the relevant Process ID.
+- Use transition words such as "First", "Next", "Then".
+- Briefly explain what each process does and why it matters.
 
----
+--- 
 
 Question: {question}
 Context:
