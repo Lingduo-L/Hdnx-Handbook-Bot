@@ -27,6 +27,6 @@ if st.button("🔍 Submit") and user_input:
             process_id = match.group(1)
             # Extract the first line as the title
             title_line = doc.page_content.strip().splitlines()[0]
-            st.markdown(f"---\n#### 📄 {title_line}")
+            st.markdown(f"<hr><p style='font-size: 14px;'>📄 {title_line}</p>", unsafe_allow_html=True)
         else:
-            st.markdown("---\n#### 📄 Unlabeled Process")
+            st.markdown("<hr><p style='font-size: 14px;'>📄 Unlabeled Process</p>", unsafe_allow_html=True)
