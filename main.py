@@ -134,11 +134,12 @@ if __name__ == "__main__":
         print("\n🤖 AI Bot Answer: ")
         print(result["result"])
 
-        print("\n📚 Relevant Process Chunks: ")
+        print("\n📚 Relevant Processes:")
         for doc in result["source_documents"]:
-            match = re.search(r'Process\s+(\d+)', doc.page_content)
-            if match:
-                process_id = match.group(1)
-                print(f"\n--- Process {process_id} ---\n{doc.page_content.strip()}\n")
+            lines = doc.page_content.strip().split("\n")
+            title_line = next((line for line in lines if line.lower().startswith("process ")), None)
+            if title_line:
+                print(f"- {title_line.strip()}")
             else:
-                print(f"\n--- Unlabeled Process ---\n{doc.page_content.strip()}\n")
+                # If no title line, show first line as fallback
+                print(f"- {lines[0].strip()}")
