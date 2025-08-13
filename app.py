@@ -32,6 +32,6 @@ if st.button("🔍 Submit") and user_input:
                 # Clean title_line by removing markdown prefix
                 clean_title = title_line.lstrip("# ").strip()
                 st.markdown(f"<hr><p style='font-size: 16px;'>📄 {clean_title}</p>", unsafe_allow_html=True)
-            else:
-                # Fallback to plain title line
-                st.markdown(f"<hr><p style='font-size: 16px;'>📄 {title_line}</p>", unsafe_allow_html=True)
+            # else:
+            #     # Fallback to plain title line
+            #     st.markdown(f"<hr><p style='font-size: 16px;'>📄 {title_line}</p>", unsafe_allow_html=True)
