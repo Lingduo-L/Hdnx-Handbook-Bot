@@ -22,11 +22,16 @@ if st.button("🔍 Submit") and user_input:
 
     st.markdown("### 📚 Relevant Processes:")
     for i, doc in enumerate(result["source_documents"]):
-        match = re.search(r"# Process\s+(\d+)", doc.page_content)
-        if match:
-            process_id = match.group(1)
-            # Extract the first line as the title
-            title_line = doc.page_content.strip().splitlines()[0]
-            st.markdown(f"<hr><p style='font-size: 14px;'>📄 {title_line}</p>", unsafe_allow_html=True)
-        else:
-            st.markdown("<hr><p style='font-size: 14px;'>📄 Unlabeled Process</p>", unsafe_allow_html=True)
+        lines = doc.page_content.strip().splitlines()
+        if lines:
+            title_line = lines[0]
+            # Try to match process title from line
+            match = re.search(r"# Process\s+(\d+)", title_line)
+            if match:
+                process_id = match.group(1)
+                # Clean title_line by removing markdown prefix
+                clean_title = title_line.lstrip("# ").strip()
+                st.markdown(f"<hr><p style='font-size: 16px;'>📄 {clean_title}</p>", unsafe_allow_html=True)
+            else:
+                # Fallback to plain title line
+                st.markdown(f"<hr><p style='font-size: 16px;'>📄 {title_line}</p>", unsafe_allow_html=True)
