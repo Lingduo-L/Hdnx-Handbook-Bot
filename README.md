@@ -110,6 +110,12 @@ This file is automatically recognized by Streamlit Cloud and should **not** be c
 
 ---
 
+## Reference
+
+- https://github.com/NirDiamant/RAG_Techniques
+
+---
+
 ## 📬 Contact
 
 Built with ❤️ by [Linda]  
