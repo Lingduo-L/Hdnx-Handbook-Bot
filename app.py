@@ -1,6 +1,10 @@
+import os
+import sys
 import streamlit as st
-from rag_pipeline import rewrite_query, qa_chain
 import re
+
+sys.path.append(os.path.dirname(__file__))
+from rag_pipeline import rewrite_query, qa_chain
 
 st.set_page_config(page_title="Hdnx Handbook Bot", page_icon="🤖")
 
