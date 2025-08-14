@@ -1,5 +1,5 @@
 import streamlit as st
-from fucntion import rewrite_query, qa_chain
+from rag_pipeline import rewrite_query, qa_chain
 import re
 
 st.set_page_config(page_title="Hdnx Handbook Bot", page_icon="🤖")
